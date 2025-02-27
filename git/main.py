@@ -1,5 +1,6 @@
 import os
 import sys
+import zlib
 
 def main():
 
@@ -15,7 +16,13 @@ def main():
             with open(".git/HEAD", "w") as file:
                 file.write("ref: refs/heads/main\n")
             print("Initialized git repository.")
-    
+    if command == "cat-file" and sys.argv[2] == "-p":
+        object_name = sys.argv[3]
+        with open(f".git/objects/{object_name[:2]}/{object_name[2:]}","rb") as file:
+            content = file.read()
+            decompressed_content = zlib.decompress(content)
+            header,content = decompressed_content.split(b"\0")
+            print(content)
 
 
 if __name__ == '__main__':
